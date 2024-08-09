@@ -84,7 +84,7 @@ class MYVAE(L.LightningModule):
         z1_sample,
         l_mu,
         l_logvar,
-        y_loss_weight=50,
+        y_loss_weight=100,
         y_prior_loss_weight=1,
         kl_loss_z1_weight=1,
         kl_loss_z2_weight=1,
