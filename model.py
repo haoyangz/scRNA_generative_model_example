@@ -8,7 +8,12 @@ from torch.distributions import Categorical, Normal, kl_divergence
 from utils import broadcast_labels, reparameterize
 
 
-class CVAE(L.LightningModule):
+class MYVAE(L.LightningModule):
+    """
+    This model implements a VAE with the following generative process and variational approximation
+    p(x|z1,z2,y,l) = p(x|z1,l)p(z1|z2,y)p(y)p(z2)p(l)
+    q(z1,z2,y,l|x) = q(z1|x)q(y|z1)q(l|x)q(z2|z1,y)
+    """
     def __init__(
         self, x_dim, y_dim, hidden_dim_list, z1_dim, z2_dim, library_mean, library_logvar, y_prior
     ):
@@ -92,7 +97,7 @@ class CVAE(L.LightningModule):
         )
 
         y_pred_logit = self.z1_to_y(z1_sample)
-        y_loss = F.cross_entropy(y_pred_logit, y)
+        y_loss = F.cross_entropy(y_pred_logit, y, reduction="none")
 
         y_pred_prob = F.softmax(y_pred_logit)
         y_prior_loss = kl_divergence(
