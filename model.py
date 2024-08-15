@@ -11,7 +11,7 @@ from utils import broadcast_labels, reparameterize
 class MYVAE(L.LightningModule):
     """
     This model implements a VAE with the following generative process and variational approximation
-    p(x|z1,z2,y,l) = p(x|z1,l)p(z1|z2,y)p(y)p(z2)p(l)
+    p(x,z1,z2,y,l) = p(x|z1,l)p(z1|z2,y)p(y)p(z2)p(l)
     q(z1,z2,y,l|x) = q(z1|x)q(y|z1)q(l|x)q(z2|z1,y)
     """
     def __init__(
