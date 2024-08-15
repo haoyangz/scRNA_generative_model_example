@@ -10,10 +10,7 @@ def broadcast_labels(o, n_broadcast=-1):
         torch.arange(n_broadcast, device=o.device, dtype=torch.long), n_broadcast
     )
     ys = ys_.repeat_interleave(o.size(-2), dim=0)
-    if o.ndim == 2:
-        new_o = o.repeat(n_broadcast, 1)
-    elif o.ndim == 3:
-        new_o = o.repeat(1, n_broadcast, 1)
+    new_o = o.repeat(n_broadcast, 1)
     return ys, new_o
 
 
