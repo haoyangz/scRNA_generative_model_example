@@ -1,0 +1,47 @@
+\documentclass{article}
+\usepackage{graphicx} % Required for inserting images
+\usepackage{amsmath}
+
+\title{gb}
+\author{haoyang }
+\date{August 2024}
+
+\begin{document}
+
+
+\section{Cell type classification using a VAE-based framework}
+
+Here we consider the gene counts vector $x$ for each cell in a single cell RNA-seq data as a sample from a zero-inflated negative bionomial (ZINB) distribution. The parameters of the ZINB distribution are determined from two random variables, a latent cell state $z_1 \sim \matchcal{N}(\mu_{z1}, \sigma_{z1}^2)$ and the library size $l \sim LogNorm(\mu_l, \sigma_l)$. Furthermore, $\mu_{z1}$ and $\sigma_{z1}$ are determined by both cell type $y \sim Categorical(\pi_y)$ and a basal cell state $z_2 \sim \matchcal{N}(\mu_{z2}, \sigma_{z2}^2)$ that captures non-cell-type information such as cell cycle. \\
+
+With these assumptions, we can factorize the joint probability of $x$ and latent variables as $ p(x, z_1,z_2,l,y) = p(x|z_1, l)p(z_1|z_2,y)p(y)p(l)p(z_2)$ \\
+
+Further more, we consider the following variational factorization of the posterior distribution $q(z_1,z_2,l,y|x) = q(z_2|z_1,y)q(y|z_1)q(l|x)q(z_1|x)$. This posterior distribution is approximated by neural networks through a VAE framework. \\
+
+
+The ELBO loss of the VAE can be derived as follows: \\
+
+
+Let H = \{z1, z2, l, y\}
+
+
+\begin{align}
+\log P(x) &= \log \int_{H} p(x, H) dH  \\
+&= \log E_{q(H)}\big[\frac{p(x, H)}{q(H)} \big] \\
+&\geq E_{q(H)}\log \frac{p(x, H)}{q(H)} \\
+&= E_{q(z_1, z_2, l, y)}\log \frac{p(x|z_1, l)p(z_1|z_2,y)p(y)p(l)p(z_2)}{q(z_2|z_1,y)q(y|z_1)q(l|x)q(z_1|x)} \\
+&= E_{q(z_1|x)q(l|x))} \log p(x|z_1, l) + E_{q(z_1, z_2, y|x)} \log \frac{p(z_1|z_2, y)}{q(z_1|x)} \\
+&+ E_{q(z_1, y|x)} \log \frac{p(y)}{q(y|z_1)} + E_{q(l|x)} \log \frac{p(l)}{q(l|x)}  \\
+&+ E_{q(z_1,z_2, y |x)} \log \frac{p(z_2)}{q(z_2|z_1, y)}  
+\end{align}
+
+where 
+\begin{align}
+E_{q(z_1, z_2, y|x)} \log \frac{p(z_1|z_2, y)}{q(z_1|x)} &= E_{q(z_1|x)}\left[\sum_y q(y|z_1)E_{q(z_2|z_1, y)} \big[ \log \frac{p(z_1 | z_2, y)}{q(z_1|x)} \big] \right] \\
+E_{q(z_1, y|x)} \log \frac{p(y)}{q(y|z_1)} &= E_{q(z_1|x)} \sum_y q(y|z_1) \log \frac{p(y)}{q(y|z_1)} \\
+E_{q(z_1,z_2, y |x)} \log \frac{p(z_2)}{q(z_2|z_1, y)} &= E_{q(z_1|x)}\left[\sum_y q(y|z_1)E_{q(z_2|z_1, y)} \big[ \log \frac{p(z_2)}{q(z_2|z_1, y)} \big] \right]
+\end{align}
+
+\section{Notes on the implementation}
+The VAE model in this project was implemented from scratch based on the ELBO loss derivation above. For part of the loss calculation, I imported the ZINB loss class from the scvi-tools package.
+
+\end{document}
