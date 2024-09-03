@@ -1,6 +1,9 @@
 ## This repo implements a generative model of scRNA-seq for cell type prediction 
 
-#### Model files
+## Model archetucture
+- gb.pdf
+  
+#### Model implementation
 - model.py
 - utils.py
 
